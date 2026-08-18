@@ -199,7 +199,7 @@ public class R2Service : IAsyncDisposable
         };
         if (progress != null)
         {
-            request.StreamTransferProgress += (_, e) =>
+            request.UploadProgressEvent += (_, e) =>
                 progress.Report(new TransferProgress(e.TransferredBytes, e.TotalBytes));
         }
         await transfer.UploadAsync(request, ct);
@@ -222,7 +222,7 @@ public class R2Service : IAsyncDisposable
         };
         if (progress != null)
         {
-            request.WriteRequestProgressEvent += (_, e) =>
+            request.WriteObjectProgressEvent += (_, e) =>
                 progress.Report(new TransferProgress(e.TransferredBytes, e.TotalBytes));
         }
         await transfer.DownloadAsync(request, ct);

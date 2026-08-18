@@ -24,4 +24,15 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.401.2" />
   </ItemGroup>
 
+  <!-- 将图标打包为 WPF Resource，供 XAML 中 Icon="Resources/app.ico" 运行时加载 -->
+  <ItemGroup>
+    <Resource Include="Resources\app.ico" />
+  </ItemGroup>
+
+  <!-- UseWindowsForms=true 会隐式注入 System.Drawing / System.Windows.Forms 全局 using，与 WPF 类型冲突，显式移除，仅在需要的文件局部引入 -->
+  <ItemGroup>
+    <Using Remove="System.Drawing" />
+    <Using Remove="System.Windows.Forms" />
+  </ItemGroup>
+
 </Project>

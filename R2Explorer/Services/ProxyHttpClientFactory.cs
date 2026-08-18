@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http;
 using Amazon.Runtime;
 using R2Explorer.Models;
 
@@ -29,10 +30,10 @@ public class ProxyHttpClientFactory : HttpClientFactory
         _client = new HttpClient(handler);
     }
 
-    public override HttpClient GetHttpClient(IClientConfig clientConfig) => _client;
+    public override HttpClient CreateHttpClient(IClientConfig clientConfig) => _client;
 
-    public override void DisposeHttpClient(HttpClient httpClient)
-    {
-        // 由本工厂统一持有，不随单次请求释放
-    }
+    /// <summary>工厂自身持有一个长期复用的 HttpClient，无需 SDK 缓存或释放。</summary>
+    public override bool UseSDKHttpClientCaching(IClientConfig clientConfig) => false;
+
+    public override bool DisposeHttpClientsAfterUse(IClientConfig clientConfig) => false;
 }

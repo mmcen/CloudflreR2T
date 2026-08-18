@@ -1177,7 +1177,7 @@ public partial class MainWindow : Window
             else
             {
                 var meta = await svc.GetMetadataAsync(bucket, item.Key);
-                details = $"名称：{item.Name}\nKey：{item.Key}\n类型：文件\n大小：{R2Item.FormatSize(meta.ContentLength)}\nContent-Type：{meta.ContentType}\nETag：{meta.ETag}\n修改时间：{meta.LastModified.ToLocalTime():yyyy-MM-dd HH:mm:ss}";
+                details = $"名称：{item.Name}\nKey：{item.Key}\n类型：文件\n大小：{R2Item.FormatSize(meta.ContentLength)}\nContent-Type：{meta.Headers.ContentType}\nETag：{meta.ETag}\n修改时间：{meta.LastModified.ToLocalTime():yyyy-MM-dd HH:mm:ss}";
             }
             MessageBox.Show(this, details, "属性", MessageBoxButton.OK, MessageBoxImage.Information);
         }
@@ -1248,6 +1248,44 @@ public partial class MainWindow : Window
         _allowClose = true;
     }
 
+    // ===================== 自定义标题栏 =====================
+
+    /// <summary>标题栏拖拽移动窗口；双击切换最大化/还原。</summary>
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2)
+        {
+            ToggleMaximize();
+            return;
+        }
+        if (WindowState == WindowState.Maximized)
+        {
+            // 最大化状态下拖拽：按鼠标比例还原后继续拖动
+            var pos = e.GetPosition(this);
+            var screen = PointToScreen(pos);
+            WindowState = WindowState.Normal;
+            Left = screen.X - pos.X;
+            Top = screen.Y - pos.Y;
+            try { DragMove(); } catch (InvalidOperationException) { }
+        }
+        else
+        {
+            try { DragMove(); } catch (InvalidOperationException) { }
+        }
+    }
+
+    private void BtnMinimize_Click(object sender, RoutedEventArgs e)
+        => WindowState = WindowState.Minimized;
+
+    private void BtnMaximize_Click(object sender, RoutedEventArgs e)
+        => ToggleMaximize();
+
+    private void BtnClose_Click(object sender, RoutedEventArgs e)
+        => Close();
+
+    private void ToggleMaximize()
+        => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
     private void Window_Closing(object? sender, CancelEventArgs e)
     {
         if (_allowClose)
@@ -1266,6 +1304,29 @@ public partial class MainWindow : Window
         if (WindowState == WindowState.Minimized && _settings.MinimizeToTrayOnMinimize)
         {
             Hide();
+        }
+
+        // 无边框窗口最大化时对齐工作区，避免覆盖任务栏
+        if (WindowState == WindowState.Maximized)
+        {
+            var wa = SystemParameters.WorkArea;
+            MaxHeight = wa.Height;
+            MaxWidth = wa.Width;
+            Left = wa.Left;
+            Top = wa.Top;
+        }
+        else
+        {
+            MaxHeight = double.PositiveInfinity;
+            MaxWidth = double.PositiveInfinity;
+        }
+
+        // 更新标题栏最大化/还原图标与提示
+        if (BtnMaximize != null)
+        {
+            bool isMax = WindowState == WindowState.Maximized;
+            BtnMaximize.Content = isMax ? "\uE923" : "\uE922"; // 还原 / 最大化
+            BtnMaximize.ToolTip = isMax ? "还原" : "最大化";
         }
     }
 

@@ -5,13 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:R2Explorer.Models"
         xmlns:conv="clr-namespace:R2Explorer.Converters"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         mc:Ignorable="d"
         Title="R2 Explorer - Cloudflare R2 客户端"
+        Icon="Resources/app.ico"
         Width="1240" Height="780" MinWidth="1000" MinHeight="620"
         Background="{DynamicResource WindowBgBrush}"
         WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
         Closing="Window_Closing"
         StateChanged="Window_StateChanged">
+
+    <!-- 自绘标题栏：去掉系统标题栏，窗口拖动/缩放由 WindowChrome 接管 -->
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0"
+                            ResizeBorderThickness="6"
+                            GlassFrameThickness="0,0,0,1"
+                            CornerRadius="0"
+                            UseAeroCaptionButtons="False" />
+    </shell:WindowChrome.WindowChrome>
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -65,12 +77,49 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <!-- ================= 自绘标题栏 ================= -->
+        <Border Grid.Row="0" Background="{DynamicResource SidebarBgBrush}"
+                BorderBrush="{DynamicResource BorderStrokeBrush}" BorderThickness="0,0,0,1"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                shell:WindowChrome.IsHitTestVisibleInChrome="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="&#xE7C1;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                               Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="R2 Explorer" FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1" Text="Cloudflare R2 对象存储客户端" FontSize="11"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" Margin="24,0" />
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button x:Name="BtnMinimize" Style="{StaticResource CaptionButton}" Content="&#xE921;"
+                            Click="BtnMinimize_Click" ToolTip="最小化" />
+                    <Button x:Name="BtnMaximize" Style="{StaticResource CaptionButton}" Content="&#xE922;"
+                            Click="BtnMaximize_Click" ToolTip="最大化" />
+                    <Button x:Name="BtnClose" Style="{StaticResource CaptionButtonClose}" Content="&#xE8BB;"
+                            Click="BtnClose_Click" ToolTip="关闭" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
         <!-- ================= 主区域 ================= -->
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="330" MinWidth="260" MaxWidth="460" />
                 <ColumnDefinition Width="5" />
@@ -120,12 +169,18 @@
                     <!-- 底部操作 -->
                     <StackPanel Grid.Row="2" Margin="12,10,12,14">
                         <UniformGrid Columns="3" Margin="0,0,0,8">
-                            <Button x:Name="BtnAddAccount" Style="{DynamicResource BtnIcon}" Content="&#xE710;"
-                                    ToolTip="添加帐号" Click="BtnAddAccount_Click" />
-                            <Button x:Name="BtnEditAccount" Style="{DynamicResource BtnIcon}" Content="&#xE70F;"
-                                    ToolTip="编辑帐号" Click="BtnEditAccount_Click" />
-                            <Button x:Name="BtnDeleteAccount" Style="{DynamicResource BtnIcon}" Content="&#xE74D;"
-                                    ToolTip="删除帐号" Click="BtnDeleteAccount_Click" />
+                            <Button x:Name="BtnAddAccount" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="添加帐号" Click="BtnAddAccount_Click">
+                                <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
+                            <Button x:Name="BtnEditAccount" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="编辑帐号" Click="BtnEditAccount_Click">
+                                <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
+                            <Button x:Name="BtnDeleteAccount" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="删除帐号" Click="BtnDeleteAccount_Click">
+                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
                         </UniformGrid>
                         <Button x:Name="BtnConnect" Style="{DynamicResource BtnPrimary}" Content="连接"
                                 Click="BtnConnect_Click" />
@@ -163,12 +218,18 @@
                                        Foreground="{DynamicResource TextSecondaryBrush}" />
                             <ComboBox x:Name="BucketCombo" Width="190" Margin="8,0"
                                       SelectionChanged="BucketCombo_SelectionChanged" />
-                            <Button x:Name="BtnRefreshBuckets" Style="{DynamicResource BtnIcon}" Content="&#xE72C;"
-                                    ToolTip="刷新存储桶" Click="BtnRefreshBuckets_Click" />
-                            <Button x:Name="BtnCreateBucket" Style="{DynamicResource BtnIcon}" Content="&#xE8B7;"
-                                    ToolTip="新建存储桶" Click="BtnCreateBucket_Click" />
-                            <Button x:Name="BtnDeleteBucket" Style="{DynamicResource BtnIcon}" Content="&#xE74D;"
-                                    ToolTip="删除当前存储桶（会先清空其中对象）" Click="BtnDeleteBucket_Click" />
+                            <Button x:Name="BtnRefreshBuckets" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="刷新存储桶" Click="BtnRefreshBuckets_Click">
+                                <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
+                            <Button x:Name="BtnCreateBucket" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="新建存储桶" Click="BtnCreateBucket_Click">
+                                <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
+                            <Button x:Name="BtnDeleteBucket" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="删除当前存储桶（会先清空其中对象）" Click="BtnDeleteBucket_Click">
+                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
                         </StackPanel>
 
                         <Grid Grid.Column="1" Margin="14,0">
@@ -178,17 +239,24 @@
                             </Grid.ColumnDefinitions>
                             <TextBox x:Name="PathBox" VerticalContentAlignment="Center"
                                      PreviewKeyDown="PathBox_KeyDown" ToolTip="路径前缀，回车跳转，如 folder/sub" />
-                            <Button Grid.Column="1" Style="{DynamicResource BtnIcon}" Content="&#xE72C;"
-                                    Margin="6,0,0,0" ToolTip="跳转" Click="BtnGoPath_Click" />
+                            <Button Grid.Column="1" Style="{DynamicResource BtnIcon}"
+                                    Margin="6,0,0,0" ToolTip="跳转" Click="BtnGoPath_Click">
+                                <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
                         </Grid>
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal">
-                            <Button x:Name="BtnUp" Style="{DynamicResource BtnIcon}" Content="&#xE74A;"
-                                    ToolTip="返回上级" Click="BtnUp_Click" />
-                            <Button x:Name="BtnNewFolder" Style="{DynamicResource BtnIcon}" Content="&#xE8B7;"
-                                    ToolTip="新建文件夹" Click="BtnNewFolder_Click" />
-                            <Button x:Name="BtnUpload" Style="{DynamicResource BtnIcon}" Content="&#xE898;"
+                            <Button x:Name="BtnUp" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="返回上级" Click="BtnUp_Click">
+                                <TextBlock Text="&#xE74A;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
+                            <Button x:Name="BtnNewFolder" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="新建文件夹" Click="BtnNewFolder_Click">
+                                <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
+                            <Button x:Name="BtnUpload" Style="{DynamicResource BtnIcon}"
                                     ToolTip="上传文件 / 文件夹" Click="BtnUpload_Click">
+                                <TextBlock Text="&#xE898;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
                                 <Button.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="上传文件..." Click="CtxUploadFiles_Click" />
@@ -196,8 +264,10 @@
                                     </ContextMenu>
                                 </Button.ContextMenu>
                             </Button>
-                            <Button x:Name="BtnRefresh" Style="{DynamicResource BtnIcon}" Content="&#xE72C;"
-                                    ToolTip="刷新" Click="BtnRefresh_Click" />
+                            <Button x:Name="BtnRefresh" Style="{DynamicResource BtnIcon}"
+                                    ToolTip="刷新" Click="BtnRefresh_Click">
+                                <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="15" />
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -433,9 +503,11 @@
                                         <TextBlock Grid.Column="4" Text="{Binding StateText}" FontSize="12"
                                                    Foreground="{Binding State, Converter={StaticResource TransferStateColor}}"
                                                    VerticalAlignment="Center" />
-                                        <Button Grid.Column="5" Content="&#xE711;" Style="{DynamicResource BtnIcon}"
+                                        <Button Grid.Column="5" Style="{DynamicResource BtnIcon}"
                                                 Width="24" Height="24" FontSize="11" Click="BtnCancelTransfer_Click"
-                                                Tag="{Binding}" ToolTip="取消" />
+                                                Tag="{Binding}" ToolTip="取消">
+                                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11" />
+                                        </Button>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
@@ -446,7 +518,7 @@
         </Grid>
 
         <!-- ================= 状态栏 ================= -->
-        <Border Grid.Row="1" Background="{DynamicResource SidebarBgBrush}"
+        <Border Grid.Row="2" Background="{DynamicResource SidebarBgBrush}"
                 BorderBrush="{DynamicResource BorderStrokeBrush}" BorderThickness="0,1,0,0"
                 Padding="12,6">
             <Grid>

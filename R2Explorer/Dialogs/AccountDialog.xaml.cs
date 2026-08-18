@@ -161,7 +161,7 @@ public partial class AccountDialog : Window
             {
                 var buckets = await client.ListBucketsAsync();
                 TestResult.Foreground = (System.Windows.Media.Brush)FindResource("SuccessBrush");
-                TestResult.Text = $"连接成功！共 {buckets.Count} 个存储桶。";
+                TestResult.Text = $"连接成功！共 {buckets.Buckets.Count} 个存储桶。";
             }
         }
         catch (Exception ex)
