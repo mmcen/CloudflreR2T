@@ -1,0 +1,32 @@
+<Window x:Class="R2Explorer.Dialogs.PresignedUrlDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="生成临时链接"
+        Width="680"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource WindowBgBrush}">
+    <StackPanel Margin="22,20">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="有效期：" VerticalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <ComboBox x:Name="ExpiryCombo" Width="140" SelectionChanged="ExpiryCombo_SelectionChanged">
+                <ComboBoxItem Tag="5" Content="5 分钟" />
+                <ComboBoxItem Tag="15" Content="15 分钟" />
+                <ComboBoxItem Tag="60" Content="1 小时" />
+                <ComboBoxItem Tag="360" Content="6 小时" />
+                <ComboBoxItem Tag="1440" Content="24 小时" />
+            </ComboBox>
+        </StackPanel>
+
+        <TextBlock Text="临时访问链接（GET，可下载或分享）：" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,6" />
+        <TextBox x:Name="UrlBox" IsReadOnly="True" TextWrapping="Wrap" MaxHeight="140"
+                 VerticalScrollBarVisibility="Auto" Foreground="{DynamicResource AccentBrush}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="BtnCopyUrl" Content="复制链接" Style="{DynamicResource BtnPrimary}" Click="BtnCopyUrl_Click" />
+            <Button Content="关闭" Style="{DynamicResource BtnBase}" IsCancel="True" Margin="10,0,0,0" />
+        </StackPanel>
+    </StackPanel>
+</Window>

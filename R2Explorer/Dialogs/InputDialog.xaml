@@ -1,0 +1,30 @@
+<Window x:Class="R2Explorer.Dialogs.InputDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="输入"
+        Width="440"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource WindowBgBrush}">
+    <Grid Margin="22,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="PromptText"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+
+        <TextBox x:Name="InputBox" Grid.Row="1" />
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="BtnOk" Content="确定" Style="{DynamicResource BtnPrimary}" IsDefault="True" Click="BtnOk_Click" />
+            <Button Content="取消" Style="{DynamicResource BtnBase}" IsCancel="True" Margin="10,0,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>
